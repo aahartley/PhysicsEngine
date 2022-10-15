@@ -1,0 +1,171 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;c++;cppm;ixx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;h++;hm;inl;inc;ipp;xsd</Extensions>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="src\Application.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\DiskApp.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Graphics.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Physics\Body.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Physics\CollisionDetection.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Physics\Constants.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Physics\Contact.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Physics\Force.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Physics\Particle.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Physics\Shape.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Physics\Vec2.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="lib\SDL2_gfx\SDL2_gfxPrimitives.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="lib\SDL2_gfx\SDL2_gfxPrimitives_font.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="lib\SDL2_gfx\SDL2_imageFilter.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="lib\SDL2_gfx\SDL2_rotozoom.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="src\DiskApp5.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Graphics.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Main.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Physics\Body.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Physics\CollisionDetection.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Physics\Contact.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Physics\Force.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Physics\Particle.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Physics\Shape.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Physics\Vec2.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="lib\SDL2_gfx\SDL2_gfxPrimitives.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="lib\SDL2_gfx\SDL2_imageFilter.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="lib\SDL2_gfx\SDL2_rotozoom.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="assets\basketball.jpg">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="assets\basketball.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="assets\bowlingball.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="assets\crate.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="assets\metal.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="assets\uscaLogo.jpg">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="assets\uscaLogo.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Debug\275Assignments.exe.recipe" />
+    <None Include="Debug\275Final.exe.recipe" />
+    <None Include="Debug\275Final.ilk" />
+    <None Include="Debug\vc143.idb" />
+    <None Include="Debug\vc143.pdb" />
+    <None Include="Debug\275Assignments.tlog\275Assignments.lastbuildstate" />
+    <None Include="Debug\275Assignments.tlog\CL.command.1.tlog" />
+    <None Include="Debug\275Assignments.tlog\CL.read.1.tlog" />
+    <None Include="Debug\275Assignments.tlog\CL.write.1.tlog" />
+    <None Include="Debug\275Assignments.tlog\link.command.1.tlog" />
+    <None Include="Debug\275Assignments.tlog\link.read.1.tlog" />
+    <None Include="Debug\275Assignments.tlog\link.write.1.tlog" />
+    <None Include="Debug\275Final.tlog\275Final.lastbuildstate" />
+    <None Include="Debug\275Final.tlog\CL.command.1.tlog" />
+    <None Include="Debug\275Final.tlog\CL.read.1.tlog" />
+    <None Include="Debug\275Final.tlog\CL.write.1.tlog" />
+    <None Include="Debug\275Final.tlog\link.command.1.tlog" />
+    <None Include="Debug\275Final.tlog\link.read.1.tlog" />
+    <None Include="Debug\275Final.tlog\link.write.1.tlog" />
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="Debug\275Assignments.log" />
+    <Text Include="Debug\275Final.Build.CppClean.log" />
+    <Text Include="Debug\275Final.log" />
+    <Text Include="Debug\275Final.vcxproj.FileListAbsolute.txt" />
+    <Text Include="Debug\vcpkg.applocal.log" />
+  </ItemGroup>
+  <ItemGroup>
+    <Object Include="Debug\Body.obj" />
+    <Object Include="Debug\CollisionDetection.obj" />
+    <Object Include="Debug\Contact.obj" />
+    <Object Include="Debug\DiskApp5.obj" />
+    <Object Include="Debug\Force.obj" />
+    <Object Include="Debug\Graphics.obj" />
+    <Object Include="Debug\Main.obj" />
+    <Object Include="Debug\Particle.obj" />
+    <Object Include="Debug\SDL2_gfxPrimitives.obj" />
+    <Object Include="Debug\SDL2_imageFilter.obj" />
+    <Object Include="Debug\SDL2_rotozoom.obj" />
+    <Object Include="Debug\Shape.obj" />
+    <Object Include="Debug\Vec2.obj" />
+  </ItemGroup>
+</Project>
