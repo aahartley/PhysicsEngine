@@ -22,7 +22,7 @@ struct Particle {
 
     float mass;
     float invMass;
-
+    bool alive = true;
     double fh;
 
     Particle(float x, float y, float mass);

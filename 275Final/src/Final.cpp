@@ -30,8 +30,10 @@ void Application::setup() {
 	Particle* heavy = new Particle(-5, 25, 10, 2);
 	Particle* light = new Particle(0, 100, 1, 1);
 	light->velocity = Vec2{ 10,0 };
-	particles.push_back(light);
+	//particles.push_back(light);
 	//particles.push_back(heavy);
+	ParticleGenerator* gen = new ParticleGenerator(10);
+	generators.push_back(gen);
 
 	std::ifstream fin("my_file.txt");
 	for (std::string line; std::getline(fin, line); )   //read stream line by line
@@ -42,7 +44,7 @@ void Application::setup() {
 		float x, y;
 		in >> x >> y;       //now read the whitespace-separated floats
 		Particle* readP = new Particle(x, y, 1, 1);
-		particles.push_back(readP);
+		//particles.push_back(readP);
 	}
 		
 }
@@ -98,7 +100,7 @@ void Application::update() {};
 //====================================================================================//
 // update - update the properties of the objects                                      //
 //====================================================================================//
-void Application::update(double deltaTime) {
+void Application::update(double deltaTime, double t) {
 	static int timePreviousFrame;
 	int timeToWait = 46 - (SDL_GetTicks() - timePreviousFrame);
 	if (timeToWait > 0)
@@ -108,43 +110,62 @@ void Application::update(double deltaTime) {
 
 	double TimestepRemaining = deltaTime;
 	double Timestep = TimestepRemaining;
-	while (TimestepRemaining > 0.004) {
+	while (TimestepRemaining > 0.002) {
+		//std::cout << "remain: " << TimestepRemaining << '\n';
+
 		//-------------------------- Apply forces to the particles ----------------------------
-		for (auto particle : particles) {
+		for (auto p : particles) {
+			//std::cout << p->position.x << '\n';
+
 			//particle->addForce(pushForce);	// apply push force
+		}
+		for (auto gen : generators) {
+			gen->generateParticles(particles,t, Timestep);
 		}
 
 		//------------- Integrate the acceleration and velocity to estimate the new position ---------------
 		for (auto particle : particles) {
 			//implement: if particle needs to rest
-			particle->integrate(deltaTime, Vec2(0, -10));
-			Vec2 wind = Force::generateWindForce(*particle, 0.4, -12.5);
-			Vec2 drag = Force::generateDragForce(*particle, 0.4);
+			if (particle->alive) {
+				particle->integrate(Timestep, Vec2(0, -10));
+				Vec2 wind = Force::generateWindForce(*particle, 0.4, -12.5);
+				Vec2 drag = Force::generateDragForce(*particle, 0.4);
 
-			if (particle->velocity.magnitude() > 0.01) {
-				particle->addForce(drag);
-				particle->addForce(wind);
+				if (particle->velocity.magnitude() > 0.01) {
+					particle->addForce(drag);
+					particle->addForce(wind);
+				}
 			}
 
 		}
-		//collisions
-		Particle* collidedP = checkBoundaryCollisions();
-		if (collidedP!=nullptr) {
-			Timestep = collidedP->fh * Timestep;
-			//revert state to before collision
-			collidedP->acceleration = collidedP->oldAcc;
-			collidedP->velocity = collidedP->oldVel;
-			collidedP->position = collidedP->oldPos;
-			//reintegrate particle at exact time of collision
-			collidedP->integrate(Timestep);
-			std::cout << "hit plane at: " <<collidedP->position.x << ' ' << collidedP->position.y << '\n';
-			//collision response
-			boundaryCollisionResponse(collidedP);
-			collidingP.erase(collidingP.begin());
-		}
+		////collisions for single particle
+
+		//Particle* collidedP = checkBoundaryCollisions();
+		//if (collidedP!=nullptr) {
+		//	Timestep = collidedP->fh * Timestep;
+		//	//std::cout << "dt "<< Timestep << '\n';
+		//	if (Timestep < 0.001) {
+		//		collidedP->alive = false;
+		//	}
+		//	//revert state to before collision
+		//	collidedP->acceleration = collidedP->oldAcc;
+		//	collidedP->velocity = collidedP->oldVel;
+		//	collidedP->position = collidedP->oldPos;
+		//	//reintegrate particle at exact time of collision
+		//	collidedP->integrate(Timestep);
+		//	//std::cout << "hit plane at: " <<collidedP->position.x << ' ' << collidedP->position.y << '\n';
+		//	//collision response
+		//	boundaryCollisionResponse(collidedP);
+		//	collidingP.erase(collidingP.begin());
+		//}
 		TimestepRemaining = TimestepRemaining - Timestep;
 
 	}
+	std::cout << "frame done'\n";
+	/*for (auto p : particles) {
+		std::cout << p->position.x << " " << p->position.y << '\n';
+	}*/
+
 
 	
 
@@ -173,31 +194,35 @@ void Application::update(double deltaTime) {
 	//	}
 	//}
 }
+//single ball collission
 void Application::boundaryCollisionResponse(Particle* p) {
-	Vec2 floor{ -10,0 };
-	Vec2 floorNorm{ 0,10 };
+	Vec2 floor{ -1,0 };
+	Vec2 floorNorm{ 0,1 };
 	Vec2 floorNunit = floorNorm.unitVector();
 	Vec2 velNormPrev = floorNunit*(p->oldVel.dot(floorNunit));
 	Vec2 velTanPrev = p->oldVel - velNormPrev;
-	double cr = 0.5;
+	double cr = 0.3;
 	double cf = 0.1;
 	Vec2 velNormCur = velNormPrev * -cr;
 	Vec2 velTanCur = velTanPrev * (1 - cf);
 	p->velocity = velNormCur + velTanCur;
 }
+//sinlge particle
 Particle* Application::checkBoundaryCollisions() {
-	Vec2 floor{ 1,0 };
+	Vec2 floor{ -1,0 };
 	Vec2 floorNorm{ 0,1 };
 	Vec2 floorNunit = floorNorm.unitVector();
+	//std::cout << floorNunit.x << " " << floorNunit.y << '\n';
 	for (auto particle : particles) {
-		//check sign
-		float dn1 = (particle->position - floor).dot(floorNunit) - particle->radius;
-		if (dn1 == 0 || dn1 < 0) {
-			std::cout << "hit floor\n";
-			float dn = (particle->oldPos - floor).dot(floorNunit)+ particle->radius;
-			particle->fh = (dn / (dn - dn1));
-
-			collidingP.push_back(particle);
+		if (particle->alive) {
+			//check sign
+			float dn = (particle->position - floor).dot(floorNunit) - particle->radius;
+			if (dn == 0 || dn < 0) {
+				//std::cout << "hit floor\n";
+				float dn1 = (particle->oldPos - floor).dot(floorNunit) + particle->radius;
+				particle->fh = (dn / (dn - dn1));
+				collidingP.push_back(particle);
+			}
 		}
 	}
 	std::sort(collidingP.begin(), collidingP.end(), [](Particle* one, Particle* two) {return one->fh < two->fh; });

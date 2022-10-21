@@ -7,7 +7,7 @@ int Graphics::windowWidth = 0;
 int Graphics::windowHeight = 0;
 int Graphics::xOrigin = 0;
 int Graphics::yOrigin = 0;
-int Graphics::unitLength = 20;
+int Graphics::unitLength = 5;
 
 int Graphics::getWindowWidth() {
     return windowWidth;

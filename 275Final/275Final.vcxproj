@@ -147,7 +147,6 @@
     <ClInclude Include="lib\SDL2_gfx\SDL2_imageFilter.h" />
     <ClInclude Include="lib\SDL2_gfx\SDL2_rotozoom.h" />
     <ClInclude Include="src\Application.h" />
-    <ClInclude Include="src\DiskApp.h" />
     <ClInclude Include="src\Graphics.h" />
     <ClInclude Include="src\Physics\Body.h" />
     <ClInclude Include="src\Physics\CollisionDetection.h" />
@@ -155,6 +154,7 @@
     <ClInclude Include="src\Physics\Contact.h" />
     <ClInclude Include="src\Physics\Force.h" />
     <ClInclude Include="src\Physics\Particle.h" />
+    <ClInclude Include="src\Physics\ParticleGenerator.h" />
     <ClInclude Include="src\Physics\Shape.h" />
     <ClInclude Include="src\Physics\Vec2.h" />
   </ItemGroup>
@@ -162,7 +162,7 @@
     <ClCompile Include="lib\SDL2_gfx\SDL2_gfxPrimitives.c" />
     <ClCompile Include="lib\SDL2_gfx\SDL2_imageFilter.c" />
     <ClCompile Include="lib\SDL2_gfx\SDL2_rotozoom.c" />
-    <ClCompile Include="src\DiskApp5.cpp" />
+    <ClCompile Include="src\Final.cpp" />
     <ClCompile Include="src\Graphics.cpp" />
     <ClCompile Include="src\Main.cpp" />
     <ClCompile Include="src\Physics\Body.cpp" />
@@ -170,6 +170,7 @@
     <ClCompile Include="src\Physics\Contact.cpp" />
     <ClCompile Include="src\Physics\Force.cpp" />
     <ClCompile Include="src\Physics\Particle.cpp" />
+    <ClCompile Include="src\Physics\ParticleGenerator.cpp" />
     <ClCompile Include="src\Physics\Shape.cpp" />
     <ClCompile Include="src\Physics\Vec2.cpp" />
   </ItemGroup>
@@ -214,7 +215,7 @@
     <Object Include="Debug\Body.obj" />
     <Object Include="Debug\CollisionDetection.obj" />
     <Object Include="Debug\Contact.obj" />
-    <Object Include="Debug\DiskApp5.obj" />
+    <Object Include="Debug\Final.obj" />
     <Object Include="Debug\Force.obj" />
     <Object Include="Debug\Graphics.obj" />
     <Object Include="Debug\Main.obj" />
