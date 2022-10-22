@@ -148,6 +148,7 @@
     <ClInclude Include="lib\SDL2_gfx\SDL2_rotozoom.h" />
     <ClInclude Include="src\Application.h" />
     <ClInclude Include="src\Graphics.h" />
+    <ClInclude Include="src\Output.h" />
     <ClInclude Include="src\Physics\Body.h" />
     <ClInclude Include="src\Physics\CollisionDetection.h" />
     <ClInclude Include="src\Physics\Constants.h" />
@@ -155,6 +156,7 @@
     <ClInclude Include="src\Physics\Force.h" />
     <ClInclude Include="src\Physics\Particle.h" />
     <ClInclude Include="src\Physics\ParticleGenerator.h" />
+    <ClInclude Include="src\Physics\ParticleList.h" />
     <ClInclude Include="src\Physics\Shape.h" />
     <ClInclude Include="src\Physics\Vec2.h" />
   </ItemGroup>

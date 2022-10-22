@@ -26,8 +26,7 @@ int main(int argc, char* args[]) {
 	double t = 0;
 	int n = 0;
 	double h = 0.046;
-	int output[6] = {0,1,2,3,4,5};
-	while (app.isRunning()  && t<20) {
+	while (app.isRunning()  && t<60) {
 		app.input();
 		app.render();
 		app.update(h,t);

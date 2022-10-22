@@ -20,6 +20,7 @@ class Application {
         std::vector<Particle*> particles;
         std::vector<Particle*> collidingP;
         std::vector<ParticleGenerator*> generators;
+ 
         Vec2 pushForce = Vec2(0, 0);
         Vec2 mouseCursor = Vec2(0, 0);
         bool leftMouseButtonDown = false;
@@ -33,6 +34,7 @@ class Application {
         void update();
         Particle* checkBoundaryCollisions();
         void boundaryCollisionResponse(Particle* p);
+        void checkBoundary(Particle* p, float dt);
         void update(double deltaTime, double t);
         void render();
         void destroy();

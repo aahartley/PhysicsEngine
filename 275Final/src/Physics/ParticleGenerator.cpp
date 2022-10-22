@@ -1,7 +1,8 @@
 #include "ParticleGenerator.h"
+#include "../Output.h"
 
 ParticleGenerator::ParticleGenerator(int n) :n(n) {
-	rate = 1;
+	rate = 3000;
 	f = 0;
 
 }
@@ -20,15 +21,24 @@ Vec2 ParticleGenerator::randomVel() {
 }
 
 void ParticleGenerator::generateParticles(std::vector<Particle*>& particles, float t, float h) {
-	n = rate * h;
-	f = f + (rate * h - n);
-	if (f > 1) {
-		n = n + 1;
-		f = f - 1;
-	}
-	for (int i = 0; i < n; i++) {
-		Particle* p = new Particle(location.x, location.y, 1, 1);
-		p->velocity = randomVel();
-		particles.push_back(p);
+	max = pos.size();
+	if (outputTime(t)) {
+		n = rate * h;
+		f = f + (rate * h - n);
+		if (f > 1) {
+			n = n + 1;
+			f = f - 1;
+		}
+		for (int i = 0; i < n; i++) {
+			Particle* p = new Particle(location.x, location.y, 1, 1);
+			particles.push_back(p);
+			if (numOfP <= max-1) {
+				p->endPos = pos.at(numOfP);
+				p->color = colors.at(numOfP);
+				numOfP++;
+			}
+			p->velocity = randomVel();
+
+		}
 	}
 }

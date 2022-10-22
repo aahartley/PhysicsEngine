@@ -4,7 +4,6 @@ Minor modifications were made in fall 2022, based on the original source code fr
 
 #include "Particle.h"
 #include <iostream>
-
 Particle::Particle(float x, float y, float mass) {
     this->position = Vec2(x, y);
     this->mass = mass;
@@ -13,13 +12,14 @@ Particle::Particle(float x, float y, float mass) {
     } else {
         this->invMass = 0.0;
     }
-    std::cout << "Particle constructor 1 called!" << std::endl;
+    //std::cout << "Particle constructor 1 called!" << std::endl;
 }
 
 Particle::Particle(float x, float y, float mass, float radius) {
 	this->position = Vec2(x, y);
 	this->mass = mass;
 	this->radius = radius;
+	this->color = 0xFF555555;
 	if (mass != 0.0) {
 		this->invMass = 1.0 / mass;
 	}
@@ -27,11 +27,11 @@ Particle::Particle(float x, float y, float mass, float radius) {
 		this->invMass = 0.0;
 	}
 
-	std::cout << "Particle constructor 2 called!" << std::endl;
+	//std::cout << "Particle constructor 2 called!" << std::endl;
 }
 
 Particle::~Particle() {
-    std::cout << "Particle destructor called!" << std::endl;
+   // std::cout << "Particle destructor called!" << std::endl;
 }
 
 void Particle::addForce(const Vec2& force) {
@@ -65,6 +65,7 @@ void Particle::integrate(float dt, Vec2 initAccelaration) {
 	oldVel = velocity;
 	// Integrate the acceleration to find the new velocity
 	velocity += acceleration * dt;
+	vOperator(dt);
 	//std::cout << velocity.x << " " << velocity.y << '\n';
 	oldPos = position;
 	// Integrate the velocity to find the acceleration
@@ -72,4 +73,9 @@ void Particle::integrate(float dt, Vec2 initAccelaration) {
 	//std::cout << position.x << " " << position.y << '\n';
 
 	clearForces();
+}
+
+void Particle::vOperator(float dt) {
+		Vec2 distance = endPos - position;
+		velocity += distance * dt;
 }

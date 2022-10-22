@@ -6,6 +6,7 @@ The source code is from Gustavo Pezzi, co-founder of Pikuma.com
 #define PARTICLE_H
 
 #include "Vec2.h"
+#include <vector>
 
 struct Particle {
     //int radius;
@@ -20,10 +21,13 @@ struct Particle {
 
     Vec2 sumForces;
 
+    Vec2 endPos;
+
     float mass;
     float invMass;
     bool alive = true;
     double fh;
+    int color;
 
     Particle(float x, float y, float mass);
 	Particle(float x, float y, float mass, float radius);
@@ -34,6 +38,8 @@ struct Particle {
 
     void integrate(float dt);
 	void integrate(float dt, Vec2 initAccelaration);	// the initial accelaration such as the gravity is involved
+
+    void vOperator(float dt);
 };
 
 #endif
