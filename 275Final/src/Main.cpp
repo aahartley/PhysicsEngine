@@ -2,6 +2,7 @@
 The source code is from Gustavo Pezzi, co-founder of Pikuma.com
 */
 
+//#include "App.h"
 #include "Application.h"
 #include <iostream>
 //int main(int argc, char *args[]) {
@@ -28,7 +29,7 @@ int main(int argc, char* args[]) {
 	double h = 0.046;
 	while (app.isRunning()  && t<60) {
 		app.input();
-		app.render();
+		app.render(t);
 		app.update(h,t);
 		n = n + 1;
 		t = n * h;

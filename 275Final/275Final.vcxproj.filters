@@ -133,48 +133,8 @@
     <Image Include="assets\uscaLogo.png">
       <Filter>Resource Files</Filter>
     </Image>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Debug\275Assignments.exe.recipe" />
-    <None Include="Debug\275Final.exe.recipe" />
-    <None Include="Debug\275Final.ilk" />
-    <None Include="Debug\vc143.idb" />
-    <None Include="Debug\vc143.pdb" />
-    <None Include="Debug\275Assignments.tlog\275Assignments.lastbuildstate" />
-    <None Include="Debug\275Assignments.tlog\CL.command.1.tlog" />
-    <None Include="Debug\275Assignments.tlog\CL.read.1.tlog" />
-    <None Include="Debug\275Assignments.tlog\CL.write.1.tlog" />
-    <None Include="Debug\275Assignments.tlog\link.command.1.tlog" />
-    <None Include="Debug\275Assignments.tlog\link.read.1.tlog" />
-    <None Include="Debug\275Assignments.tlog\link.write.1.tlog" />
-    <None Include="Debug\275Final.tlog\275Final.lastbuildstate" />
-    <None Include="Debug\275Final.tlog\CL.command.1.tlog" />
-    <None Include="Debug\275Final.tlog\CL.read.1.tlog" />
-    <None Include="Debug\275Final.tlog\CL.write.1.tlog" />
-    <None Include="Debug\275Final.tlog\link.command.1.tlog" />
-    <None Include="Debug\275Final.tlog\link.read.1.tlog" />
-    <None Include="Debug\275Final.tlog\link.write.1.tlog" />
-  </ItemGroup>
-  <ItemGroup>
-    <Text Include="Debug\275Assignments.log" />
-    <Text Include="Debug\275Final.Build.CppClean.log" />
-    <Text Include="Debug\275Final.log" />
-    <Text Include="Debug\275Final.vcxproj.FileListAbsolute.txt" />
-    <Text Include="Debug\vcpkg.applocal.log" />
-  </ItemGroup>
-  <ItemGroup>
-    <Object Include="Debug\Body.obj" />
-    <Object Include="Debug\CollisionDetection.obj" />
-    <Object Include="Debug\Contact.obj" />
-    <Object Include="Debug\Force.obj" />
-    <Object Include="Debug\Graphics.obj" />
-    <Object Include="Debug\Main.obj" />
-    <Object Include="Debug\Particle.obj" />
-    <Object Include="Debug\SDL2_gfxPrimitives.obj" />
-    <Object Include="Debug\SDL2_imageFilter.obj" />
-    <Object Include="Debug\SDL2_rotozoom.obj" />
-    <Object Include="Debug\Shape.obj" />
-    <Object Include="Debug\Vec2.obj" />
-    <Object Include="Debug\Final.obj" />
+    <Image Include="assets\squaredream.png">
+      <Filter>Resource Files</Filter>
+    </Image>
   </ItemGroup>
 </Project>

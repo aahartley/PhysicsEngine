@@ -16,6 +16,7 @@ Body::Body(const Shape& shape, float x, float y, float mass) {
     this->sumForces = Vec2(0, 0);
     this->sumTorques = 0.0;
 	this->restitution = 1.0;	// set the elasticity of the body
+    this->friction == 0.7;
     this->mass = mass;
     if (mass > 0.0) {
         this->invMass = 1.0 / mass;
@@ -38,10 +39,8 @@ Body::~Body() {
 
 //---------- to create a static body, just set its mass to a negative value ------------
 bool Body::isStatic() const {
-	if (mass < 0.0)
-		return true;
-	else
-		return false;
+    return (mass < 0.0);
+
 }
 
 void Body::addForce(const Vec2& force) {
@@ -84,7 +83,14 @@ void Body::applyImpulse(const Vec2& J) {
 	}
 	velocity += J * invMass;
 }
-
+//---------------- for polygon -----------------
+void Body::applyImpulse(const Vec2& J, const Vec2& r) {
+    if (isStatic()) {
+        return;
+    }
+    velocity += J * invMass;
+    angularVelocity += r.cross(J) * invI;
+}
 void Body::integrateAngular(float dt) {
 	if (isStatic())		// integration is not for static bodies
 		return;
@@ -100,4 +106,18 @@ void Body::integrateAngular(float dt) {
 
     // Clear all the torque acting on the object before the next physics step
     clearTorques();
+}
+
+
+
+//--------------------- update the state of the rigid body ----------------------
+void Body::update(float dt) {
+    integrateLinear(dt);
+    integrateAngular(dt);
+
+    bool isBox = shape->getType() == BOX;
+    if (isBox) {
+        Box* box = (Box*)shape;
+        box->updateVertices(rotation, position);
+    }
 }

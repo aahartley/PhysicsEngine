@@ -23,6 +23,9 @@ struct Contact {
 
     void resolvePenetration();	// the projection method
 	void resolveCollision();	// the projection method plus the impulse method 
+
+    void resolveCollisionWithRotation();	// the projection method plus the impulse method for polygons
+
 };
 
 #endif

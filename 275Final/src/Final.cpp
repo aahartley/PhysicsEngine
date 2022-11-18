@@ -15,12 +15,12 @@ bool Application::isRunning() {
 // setup - open a window, initialize objects, and set up coordinate system origin     //
 //====================================================================================//
 void Application::setup() {
-	running = Graphics::openWindow("Austin Hartley Final",800,1000);//openWindow();
+	running = Graphics::openWindow("Austin Hartley Final");//openWindow();
 
 	//----------- set up the position of the coordinate system origin in the window -----------------
-	Graphics::setOrigin(Graphics::windowWidth / 2, Graphics::windowHeight *.8);
+	Graphics::setOrigin(Graphics::windowWidth / 2, Graphics::windowHeight * .8);
 
-	image = IMG_Load("./assets/basketball.png");
+	image = IMG_Load("./assets/squareDream.png");
 	SDL_Surface* formattedImage = SDL_ConvertSurfaceFormat(image, SDL_PIXELFORMAT_ARGB8888, 0);
 	if (image) {
 		texture = SDL_CreateTextureFromSurface(Graphics::renderer, image);
@@ -30,25 +30,34 @@ void Application::setup() {
 	//std::cout << "bytes "<<(int)formattedImage->format->BytesPerPixel<<'\n';
 	int w = formattedImage->w;
 	int h = formattedImage->h;
-	ParticleGenerator* gen = new ParticleGenerator(10);
+	ParticleGenerator* gen = new ParticleGenerator(Vec2{ -100,100 });
+	ParticleGenerator* gen2 = new ParticleGenerator(Vec2{ 100,100 });
 	generators.push_back(gen);
+	generators.push_back(gen2);
+
 	//std::cout << w << " " << h<<'\n';
 	Uint32* pixels = (Uint32*)formattedImage->pixels;
 
-	for (float y = 0; y < h; y++) {
-		for (float x = 0; x < w; x++) {
+	for (float y = 0; y < h; y += 5) {
+		for (float x = 0; x < w; x += 5) {
 			int index = (y * w + x);
-			//std::cout << x << '\n';
 			Uint8 r, g, b, a;
 			SDL_GetRGBA(pixels[index], formattedImage->format, &r, &g, &b, &a);
 			if (a > 0) {
+				//std::cout << index << '\n';
 				//Graphics::xPosInCoordinate(x + 200)
-				//Particle* p = new Particle(x-20, y+50, 1, 1);
-				//p->color = (a << 24) + (b << 16) + (g << 8) + r;
+				Particle* p = new Particle(Graphics::xPosInCoordinate(x + 750), Graphics::yPosInCoordinate(y + 200), 1, 0.3);
+				p->color = (a << 24) + (b << 16) + (g << 8) + r;
 				//particles.push_back(p);
 				int color = (a << 24) + (b << 16) + (g << 8) + r;
-				gen->pos.push_back(Vec2{ x - 20,y + 50 });
-				gen->colors.push_back(color);
+				if (index < 65000) {
+					gen->pos.push_back(Vec2{ Graphics::xPosInCoordinate(x + 750),Graphics::yPosInCoordinate(y + 200) });
+					gen->colors.push_back(color);
+				}
+				else {
+					gen2->pos.push_back(Vec2{ Graphics::xPosInCoordinate(x + 750),Graphics::yPosInCoordinate(y + 200) });
+					gen2->colors.push_back(color);
+				}
 			}
 		}
 	}
@@ -74,7 +83,28 @@ void Application::setup() {
 	//	Particle* readP = new Particle(x, y, 1, 1);
 	//	particles.push_back(readP);
 	//}
-		
+	Body* floor = new Body(Box(Graphics::getWindowWidth() * 1.0 / Graphics::unitLength, 1),
+		0, 0, -1);
+	floor->restitution = 0.2;
+	floor->friction = 0.7;
+	floor->color = 0xFF003366;
+	bodies.push_back(floor);
+
+	Body* rectangle = new Body(Box(2, 2), 0, 10, 1.0);
+	rectangle->restitution = 0.4;
+	rectangle->friction = 0.5;
+	bodies.push_back(rectangle);
+
+	Body* cueDisk = new Body(Disk(2), -10, 20, 10);
+	cueDisk->color = 0xFFFFFFFF;
+	bodies.push_back(cueDisk);
+
+	Body* targetDisk = new Body(Disk(2), 10, 20, 10);
+	targetDisk->color = 0xFF00FF00;
+	bodies.push_back(targetDisk);
+
+
+
 }
 
 //====================================================================================//
@@ -142,58 +172,135 @@ void Application::update(double deltaTime, double t) {
 		//std::cout << "remain: " << TimestepRemaining << '\n';
 
 		//-------------------------- Apply forces to the particles ----------------------------
-		for (auto p : particles) {
-			//std::cout << p->position.x << '\n';
+	for (auto p : particles) {
+		//std::cout << p->position.x << '\n';
 
-			//particle->addForce(pushForce);	// apply push force
-		}
-		for (auto gen : generators) {
-			gen->generateParticles(particles,t, Timestep);
-		}
+		//particle->addForce(pushForce);	// apply push force
+	}
+	for (auto gen : generators) {
+		gen->generateParticles(particles, t, Timestep);
+	}
+	if (t > 28) {
+		for (auto body : bodies) {
+			//body->addTorque(0.1);
+			body->addForce(Vec2(0, -10 * body->mass));
+			body->update(deltaTime);
 
-		//------------- Integrate the acceleration and velocity to estimate the new position ---------------
-		for (auto particle : particles) {
-			//implement: if particle needs to rest
-			if (particle->alive) {
-				particle->integrate(Timestep, Vec2(0, -30));
-				Vec2 wind = Force::generateWindForce(*particle, 0.4, -12.5);
+
+		}
+	}
+	if (t > 28) {
+		// Check all the rigidbodies with all other rigidbodies for collisions
+		for (int i = 0; i < bodies.size() - 1; i++) {
+			for (int j = i + 1; j < bodies.size(); j++) {
+				Body* a = bodies[i];
+				Body* b = bodies[j];
+
+				Contact contact;
+
+				if (CollisionDetection::isColliding(a, b, contact)) {
+					//Resolve the collision using the impulse method
+					contact.resolveCollisionWithRotation();
+				}
+			}
+		}
+	}
+
+
+	//------------- Integrate the acceleration and velocity to estimate the new position ---------------
+	for (auto particle : particles) {
+		//implement: if particle needs to rest
+		if (particle->alive) {
+			if (t <= 3) {
+				particle->integrate(Timestep, Vec2(0, 15), 2);
 				Vec2 drag = Force::generateDragForce(*particle, 0.4);
 
-				if (particle->velocity.magnitude() > 0.01) {
+				if (particle->velocity.magnitude() >= 0.0) {
 					particle->addForce(drag);
-					particle->addForce(wind);
+					int a = rand() % 2;
+					if (a == 1) {
+						Vec2 wind = Force::generateWindForce(*particle, .7, 100);
+						particle->addForce(wind);
+					}
+					if (a == 0) {
+						Vec2 wind = Force::generateWindForce(*particle, -.7, 1);
+						particle->addForce(wind);
+					}
 				}
-				checkBoundary(particle,Timestep);
+			}
+			//form pic
+			else if (t > 3 && t <= 15) {
+				particle->integrate(Timestep, Vec2(0, -10), 1);
+				Vec2 wind = Force::generateWindForce(*particle, .7, 1);
+				Vec2 drag = Force::generateDragForce(*particle, 0.4);
+
+				if (particle->velocity.magnitude() >= 0.0) {
+					particle->addForce(drag);
+					int a = rand() % 2;
+					if (a == 1)
+						particle->addForce(wind);
+				}
+
+			}
+			//outro
+			else if (t > 15 && t <= 25) {
+				particle->integrate(Timestep, Vec2(0, -10), 3);
+				Vec2 wind = Force::generateWindForce(*particle, .7, 1);
+				Vec2 drag = Force::generateDragForce(*particle, 0.4);
+
+				if (particle->velocity.magnitude() >= 0.0) {
+					particle->addForce(drag);
+					int a = rand() % 2;
+					if (a == 1)
+						particle->addForce(wind);
+				}
+
+			}
+			else if (t > 25 && t <= 33) {
+				particle->integrate(Timestep, Vec2(0, -10), 4);
+				Vec2 wind = Force::generateWindForce(*particle, .7, 1);
+				Vec2 drag = Force::generateDragForce(*particle, 0.4);
+
+				if (particle->velocity.magnitude() >= 0.0) {
+					particle->addForce(drag);
+					int a = rand() % 2;
+					if (a == 1)
+						particle->addForce(wind);
+				}
+
 			}
 
+			checkBoundary(particle, Timestep);
 		}
-		//collision for particle system
-		
+
+	}
+	//collision for particle system
 
 
 
-		////collisions for single particle
 
-		//Particle* collidedP = checkBoundaryCollisions();
-		//if (collidedP!=nullptr) {
-		//	Timestep = collidedP->fh * Timestep;
-		//	//std::cout << "dt "<< Timestep << '\n';
-		//	if (Timestep < 0.001) {
-		//		collidedP->alive = false;
-		//	}
-		//	//revert state to before collision
-		//	collidedP->acceleration = collidedP->oldAcc;
-		//	collidedP->velocity = collidedP->oldVel;
-		//	collidedP->position = collidedP->oldPos;
-		//	//reintegrate particle at exact time of collision
-		//	collidedP->integrate(Timestep);
-		//	//std::cout << "hit plane at: " <<collidedP->position.x << ' ' << collidedP->position.y << '\n';
-		//	//collision response
-		//	boundaryCollisionResponse(collidedP);
-		//	collidingP.erase(collidingP.begin());
-		//}
+	////collisions for single particle
 
-		//TimestepRemaining = TimestepRemaining - Timestep;
+	//Particle* collidedP = checkBoundaryCollisions();
+	//if (collidedP!=nullptr) {
+	//	Timestep = collidedP->fh * Timestep;
+	//	//std::cout << "dt "<< Timestep << '\n';
+	//	if (Timestep < 0.001) {
+	//		collidedP->alive = false;
+	//	}
+	//	//revert state to before collision
+	//	collidedP->acceleration = collidedP->oldAcc;
+	//	collidedP->velocity = collidedP->oldVel;
+	//	collidedP->position = collidedP->oldPos;
+	//	//reintegrate particle at exact time of collision
+	//	collidedP->integrate(Timestep);
+	//	//std::cout << "hit plane at: " <<collidedP->position.x << ' ' << collidedP->position.y << '\n';
+	//	//collision response
+	//	boundaryCollisionResponse(collidedP);
+	//	collidingP.erase(collidingP.begin());
+	//}
+
+	//TimestepRemaining = TimestepRemaining - Timestep;
 
 //	}
 	//std::cout << "frame done'\n";
@@ -202,7 +309,7 @@ void Application::update(double deltaTime, double t) {
 	}*/
 
 
-	
+
 
 	////------------------ bouncing from the boundaries with reduced speed --------------------------
 	//static float ratio = 0.0;
@@ -235,9 +342,9 @@ void Application::checkBoundary(Particle* p, float dt) {
 	Vec2 floor{ -1,0 };
 	Vec2 floorNorm{ 0,1 };
 	Vec2 floorNunit = floorNorm.unitVector();
-	float dn = (p->oldPos - floor).dot(floorNunit)+p->radius ;
+	float dn = (p->oldPos - floor).dot(floorNunit) + p->radius;
 	//Vec2 newPos = p->position + p->velocity * dt;
-	float dn1 = (p->position - floor).dot(floorNunit)-p->radius ;
+	float dn1 = (p->position - floor).dot(floorNunit) - p->radius;
 	//if dn sign and dn1 sign differ then collision
 	if (!(dn * dn1 >= 0.0f)) {
 		p->position = p->position - (floorNunit * ((1 + cr) * dn1));
@@ -249,58 +356,98 @@ void Application::checkBoundary(Particle* p, float dt) {
 
 }
 
-//single ball collission
-void Application::boundaryCollisionResponse(Particle* p) {
-	Vec2 floor{ -1,0 };
-	Vec2 floorNorm{ 0,1 };
-	Vec2 floorNunit = floorNorm.unitVector();
-	Vec2 velNormPrev = floorNunit*(p->oldVel.dot(floorNunit));
-	Vec2 velTanPrev = p->oldVel - velNormPrev;
-	double cr = 0.3;
-	double cf = 0.1;
-	Vec2 velNormCur = velNormPrev * -cr;
-	Vec2 velTanCur = velTanPrev * (1 - cf);
-	p->velocity = velNormCur + velTanCur;
-}
-//sinlge particle
-Particle* Application::checkBoundaryCollisions() {
-	Vec2 floor{ -1,0 };
-	Vec2 floorNorm{ 0,1 };
-	Vec2 floorNunit = floorNorm.unitVector();
-	//std::cout << floorNunit.x << " " << floorNunit.y << '\n';
-	for (auto particle : particles) {
-		if (particle->alive) {
-			//check sign
-			float dn = (particle->position - floor).dot(floorNunit) - particle->radius;
-			if (dn == 0 || dn < 0) {
-				//std::cout << "hit floor\n";
-				float dn1 = (particle->oldPos - floor).dot(floorNunit) + particle->radius;
-				particle->fh = (dn / (dn - dn1));
-				collidingP.push_back(particle);
-			}
-		}
-	}
-	std::sort(collidingP.begin(), collidingP.end(), [](Particle* one, Particle* two) {return one->fh < two->fh; });
-	if (collidingP.size() == 0)
-		return nullptr;
-	else
-		return collidingP.front();
-}
+////single ball collission
+//void Application::boundaryCollisionResponse(Particle* p) {
+//	Vec2 floor{ -1,0 };
+//	Vec2 floorNorm{ 0,1 };
+//	Vec2 floorNunit = floorNorm.unitVector();
+//	Vec2 velNormPrev = floorNunit*(p->oldVel.dot(floorNunit));
+//	Vec2 velTanPrev = p->oldVel - velNormPrev;
+//	double cr = 0.3;
+//	double cf = 0.1;
+//	Vec2 velNormCur = velNormPrev * -cr;
+//	Vec2 velTanCur = velTanPrev * (1 - cf);
+//	p->velocity = velNormCur + velTanCur;
+//}
+////sinlge particle
+//Particle* Application::checkBoundaryCollisions() {
+//	Vec2 floor{ -1,0 };
+//	Vec2 floorNorm{ 0,1 };
+//	Vec2 floorNunit = floorNorm.unitVector();
+//	//std::cout << floorNunit.x << " " << floorNunit.y << '\n';
+//	for (auto particle : particles) {
+//		if (particle->alive) {
+//			//check sign
+//			float dn = (particle->position - floor).dot(floorNunit) - particle->radius;
+//			if (dn == 0 || dn < 0) {
+//				//std::cout << "hit floor\n";
+//				float dn1 = (particle->oldPos - floor).dot(floorNunit) + particle->radius;
+//				particle->fh = (dn / (dn - dn1));
+//				collidingP.push_back(particle);
+//			}
+//		}
+//	}
+//	std::sort(collidingP.begin(), collidingP.end(), [](Particle* one, Particle* two) {return one->fh < two->fh; });
+//	if (collidingP.size() == 0)
+//		return nullptr;
+//	else
+//		return collidingP.front();
+//}
 //====================================================================================//
 // render - render the objects for a frame                                            //
 //====================================================================================//
-void Application::render() {
+void Application::render(float dt) {
 	Graphics::clearScreen(0xFF21070F);
+	if (dt <= 25) {
 
-	Graphics::coordinateGrid(Graphics::unitLength, 0xFF222222);	// draw the coordinate grid for reference
-	for (auto particle : particles) {
-		Graphics::drawDisk(particle->position.x, particle->position.y, particle->radius, particle->color);
+		//Graphics::coordinateGrid(Graphics::unitLength, 0xFF222222);	// draw the coordinate grid for reference
+		for (auto particle : particles) {
+			Graphics::drawDisk(particle->position.x, particle->position.y, particle->radius, particle->color);
+		}
+		//Graphics::drawDisk(particles[0]->position.x, particles[0]->position.y, particles[0]->radius, 0xFF555555);
+		//Graphics::drawDisk(particles[1]->position.x, particles[1]->position.y, particles[1]->radius, 0xFF00FFFF);
+		//SDL_Rect dstrect = { Graphics::xPosInWindow(-30), Graphics::yPosInWindow(70), 320, 240 };
+		//SDL_RenderCopy(Graphics::renderer, texture, NULL, &dstrect);
 	}
-	//Graphics::drawDisk(particles[0]->position.x, particles[0]->position.y, particles[0]->radius, 0xFF555555);
-	//Graphics::drawDisk(particles[1]->position.x, particles[1]->position.y, particles[1]->radius, 0xFF00FFFF);
-	SDL_Rect dstrect = { Graphics::xPosInWindow(-30), Graphics::yPosInWindow(70), 320, 240};
-	//SDL_RenderCopy(Graphics::renderer, texture, NULL, &dstrect);
+	else if (dt > 25 && dt <= 28) {
+
+		for (auto particle : particles) {
+			delete particle;
+		}
+		particles.clear();
+	}
+	else if (dt > 28) {
+		Graphics::coordinateGrid(Graphics::unitLength, 0xFF222222);	// draw the coordinate grid for reference
+		for (auto particle : particles) {
+			Graphics::drawDisk(particle->position.x, particle->position.y, particle->radius, particle->color);
+		}
+		for (auto body : bodies) {
+			if (body->shape->getType() == DISK) {
+				Disk* disk = (Disk*)body->shape;
+				Graphics::drawDisk(body->position.x, body->position.y,
+					disk->radius, body->rotation, 0xFF00FFFF);
+			}
+			if (body->shape->getType() == BOX) {
+				Box* box = (Box*)body->shape;
+				Graphics::drawFilledPolygon(box->worldVertices, 0xFF00FFFF);
+			}
+			/*	if (!body->isStatic() && body->shape->getType() == BOX) {
+					Box* box = (Box*)body->shape;
+					SDL_Rect dstrect = { Graphics::xPosInWindow(body->position.x - box->width * 0.5),
+						Graphics::yPosInWindow(body->position.y + box->height * 0.5),
+						Graphics::unitLength * box->width, Graphics::unitLength * box->height };
+					SDL_RenderCopyEx(Graphics::renderer, texture, NULL, &dstrect, body->rotation * -57.295779513, NULL, SDL_FLIP_NONE);
+				}*/
+		}
+		//Graphics::drawDisk(particles[0]->position.x, particles[0]->position.y, particles[0]->radius, 0xFF555555);
+		//Graphics::drawDisk(particles[1]->position.x, particles[1]->position.y, particles[1]->radius, 0xFF00FFFF);
+		//SDL_Rect dstrect = { Graphics::xPosInWindow(-30), Graphics::yPosInWindow(70), 320, 240 };
+		//SDL_RenderCopy(Graphics::renderer, texture, NULL, &dstrect);
+
+	}
+
 	Graphics::renderFrame();
+
 }
 
 //====================================================================================//
@@ -313,6 +460,9 @@ void Application::destroy() {
 
 	for (auto particle : particles) {
 		delete particle;
+	}
+	for (auto body : bodies) {
+		delete body;
 	}
 	Graphics::CloseWindow();
 }

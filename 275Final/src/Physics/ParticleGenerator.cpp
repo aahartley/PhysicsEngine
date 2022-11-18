@@ -1,8 +1,10 @@
 #include "ParticleGenerator.h"
 #include "../Output.h"
 
-ParticleGenerator::ParticleGenerator(int n) :n(n) {
-	rate = 3000;
+ParticleGenerator::ParticleGenerator(Vec2 location) {
+	this->location = location;
+	n = 0;
+	rate = 10000;
 	f = 0;
 
 }
@@ -30,14 +32,14 @@ void ParticleGenerator::generateParticles(std::vector<Particle*>& particles, flo
 			f = f - 1;
 		}
 		for (int i = 0; i < n; i++) {
-			Particle* p = new Particle(location.x, location.y, 1, 1);
-			particles.push_back(p);
-			if (numOfP <= max-1) {
+			if (numOfP <= max - 1) {
+				Particle* p = new Particle(location.x, location.y, 1, 0.3);
+				particles.push_back(p);
 				p->endPos = pos.at(numOfP);
 				p->color = colors.at(numOfP);
+				p->velocity = randomVel();
 				numOfP++;
 			}
-			p->velocity = randomVel();
 
 		}
 	}

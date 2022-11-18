@@ -7,13 +7,14 @@ The source code is from Gustavo Pezzi, co-founder of Pikuma.com
 
 #include "Vec2.h"
 #include <vector>
-
+#include <random>
 struct Particle {
     //int radius;
 	float radius;
 
     Vec2 position;
     Vec2 oldPos;
+    Vec2 initPos;
     Vec2 oldVel;
     Vec2 velocity;
     Vec2 oldAcc;
@@ -37,9 +38,12 @@ struct Particle {
     void clearForces();
 
     void integrate(float dt);
-	void integrate(float dt, Vec2 initAccelaration);	// the initial accelaration such as the gravity is involved
+	void integrate(float dt, Vec2 initAccelaration, int vOP);	// the initial accelaration such as the gravity is involved
 
-    void vOperator(float dt);
+    void vOperatorIntro(float dt);
+    void vOperatorToSpot(float dt);
+    void vOperatorOutro(float dt);
+
 };
 
 #endif

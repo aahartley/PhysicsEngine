@@ -8,6 +8,9 @@ The source code is from Gustavo Pezzi, co-founder of Pikuma.com
 #include "./Graphics.h"
 #include "./Physics/Particle.h"
 #include "./Physics/ParticleGenerator.h"
+#include "./Physics/Body.h"
+#include "./Physics/Contact.h"
+#include "./Physics/CollisionDetection.h"
 #include <vector>
 #include <algorithm>
 #include <fstream>
@@ -20,6 +23,8 @@ class Application {
         std::vector<Particle*> particles;
         std::vector<Particle*> collidingP;
         std::vector<ParticleGenerator*> generators;
+        std::vector<Body*> bodies;
+
  
         Vec2 pushForce = Vec2(0, 0);
         Vec2 mouseCursor = Vec2(0, 0);
@@ -36,7 +41,7 @@ class Application {
         void boundaryCollisionResponse(Particle* p);
         void checkBoundary(Particle* p, float dt);
         void update(double deltaTime, double t);
-        void render();
+        void render(float dt);
         void destroy();
 };
 

@@ -9,7 +9,8 @@ Modification based on the the source code from Gustavo Pezzi, co-founder of Piku
 #include <vector>
 
 enum ShapeType {
-    DISK
+    DISK,
+	BOX
 	// other shapes will be added later
 };
 
@@ -31,6 +32,20 @@ struct Disk: public Shape {
 
 	float getArea() const;
 };
+struct Box : public Shape {
+	float width;
+	float height;
+	std::vector<Vec2> localVertices;	// design the box by vertices	
+	std::vector<Vec2> worldVertices;	// the box in the scene
 
+	Box(float width, float height);
+	virtual ~Box();
+	ShapeType getType() const override;
+	Shape* clone() const override;
+	Vec2 edgeAt(int index) const;
+	float findMinSeparation(const Box* other, Vec2& axis, Vec2& point) const;
+	float getMomentOfInertia() const override;
+	void updateVertices(float angle, const Vec2& position);	// the new position and orientation of the box
+};
 // structures of other shapes will be added later
 #endif

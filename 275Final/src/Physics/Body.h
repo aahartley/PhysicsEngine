@@ -29,6 +29,7 @@ struct Body {
     float I;
     float invI;
 	float restitution;	// Coefficient of elasticity. Value is between 0 and 1.
+    float friction; // 0-1
 
     Shape* shape = nullptr;	// Pointer to the shape/geometry of this rigid body
 	int color;				// the color of the body for rendering
@@ -44,9 +45,12 @@ struct Body {
     void clearTorques();
 
 	void applyImpulse(const Vec2& J);	// apply impulse to the body
+    void applyImpulse(const Vec2& J, const Vec2& r);	// rotation considered
 
     void integrateLinear(float dt);
     void integrateAngular(float dt);
+    void update(float dt);
+
 };
 
 #endif
