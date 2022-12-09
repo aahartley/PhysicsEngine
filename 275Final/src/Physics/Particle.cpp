@@ -78,7 +78,7 @@ void Particle::integrate(float dt, Vec2 initAccelaration, int vOP) {
 	position += ((velocity+oldVel)/2) * dt;   //added ave vel
 	//std::cout << position.x << " " << position.y << '\n';
 	if (position.x == endPos.x) {
-		std::cout << "true\n";
+		//std::cout << "true\n";
 	}
 	clearForces();
 }
@@ -126,3 +126,4 @@ void Particle::vOperatorOutro(float dt) {
 	velocity.x += x;
 	velocity.y += y;*/
 }
+

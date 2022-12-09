@@ -47,9 +47,11 @@ struct Body {
 	void applyImpulse(const Vec2& J);	// apply impulse to the body
     void applyImpulse(const Vec2& J, const Vec2& r);	// rotation considered
 
-    void integrateLinear(float dt);
+    void integrateLinear(float dt, int OP, float k);
     void integrateAngular(float dt);
-    void update(float dt);
+    void update(float dt, int OP, float k);
+
+    void aOperatorToRect(float dt, float k);
 
 };
 

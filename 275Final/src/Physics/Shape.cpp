@@ -12,7 +12,7 @@ Disk::Disk(float radius) {
 }
 
 Disk::~Disk() {
-    std::cout << "Disk destructor called!" << std::endl;
+   // std::cout << "Disk destructor called!" << std::endl;
 }
 
 Shape* Disk::clone() const {
@@ -51,7 +51,7 @@ Box::Box(float width, float height) {
 }
 
 Box::~Box() {
-	std::cout << "Box destructor called!" << std::endl;
+	//std::cout << "Box destructor called!" << std::endl;
 }
 
 ShapeType Box::getType() const {

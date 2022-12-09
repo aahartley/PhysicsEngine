@@ -8,10 +8,15 @@ The source code is from Gustavo Pezzi, co-founder of Pikuma.com
 #include "Vec2.h"
 #include <vector>
 #include <random>
+enum ParticleType {
+    FIREWORK
+};
+
 struct Particle {
     //int radius;
+    ParticleType particleType;
 	float radius;
-
+    
     Vec2 position;
     Vec2 oldPos;
     Vec2 initPos;
@@ -27,6 +32,7 @@ struct Particle {
     float mass;
     float invMass;
     bool alive = true;
+    bool exploded = false;
     double fh;
     int color;
 
@@ -43,6 +49,7 @@ struct Particle {
     void vOperatorIntro(float dt);
     void vOperatorToSpot(float dt);
     void vOperatorOutro(float dt);
+
 
 };
 

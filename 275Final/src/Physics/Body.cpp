@@ -34,7 +34,7 @@ Body::Body(const Shape& shape, float x, float y, float mass) {
 
 Body::~Body() {
     delete shape;
-    std::cout << "Body destructor called!" << std::endl;
+    //std::cout << "Body destructor called!" << std::endl;
 }
 
 //---------- to create a static body, just set its mass to a negative value ------------
@@ -59,13 +59,15 @@ void Body::clearTorques() {
     sumTorques = 0.0;
 }
 
-void Body::integrateLinear(float dt) {
+void Body::integrateLinear(float dt, int OP, float k) {
 	if (isStatic())		// intergration is not for static bodies
 		return;
-
+ 
     // Find the acceleration based on the forces that are being applied and the mass
-    acceleration = sumForces * invMass;
+    if(OP==1 && shape->getType() == DISK)
+        aOperatorToRect(dt, k);
 
+    acceleration = sumForces * invMass;
     // Integrate the acceleration to find the new velocity
     velocity += acceleration * dt;
 
@@ -111,13 +113,19 @@ void Body::integrateAngular(float dt) {
 
 
 //--------------------- update the state of the rigid body ----------------------
-void Body::update(float dt) {
-    integrateLinear(dt);
+void Body::update(float dt, int OP, float k) {
+    integrateLinear(dt, OP, k);
     integrateAngular(dt);
+    
 
     bool isBox = shape->getType() == BOX;
     if (isBox) {
         Box* box = (Box*)shape;
         box->updateVertices(rotation, position);
     }
+}
+
+void Body::aOperatorToRect(float dt, float k) {
+    Vec2 direction = (Vec2(0,0) - position).unitVector();
+    addForce(direction*k);
 }

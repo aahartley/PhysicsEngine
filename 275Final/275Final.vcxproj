@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
@@ -157,6 +157,7 @@
     <ClInclude Include="src\Physics\Particle.h" />
     <ClInclude Include="src\Physics\ParticleGenerator.h" />
     <ClInclude Include="src\Physics\ParticleList.h" />
+    <ClInclude Include="src\Physics\RBGenerator.h" />
     <ClInclude Include="src\Physics\Shape.h" />
     <ClInclude Include="src\Physics\Vec2.h" />
   </ItemGroup>
@@ -173,6 +174,7 @@
     <ClCompile Include="src\Physics\Force.cpp" />
     <ClCompile Include="src\Physics\Particle.cpp" />
     <ClCompile Include="src\Physics\ParticleGenerator.cpp" />
+    <ClCompile Include="src\Physics\RBGenerator.cpp" />
     <ClCompile Include="src\Physics\Shape.cpp" />
     <ClCompile Include="src\Physics\Vec2.cpp" />
   </ItemGroup>
@@ -181,10 +183,17 @@
     <Image Include="assets\basketball.png" />
     <Image Include="assets\bowlingball.png" />
     <Image Include="assets\crate.png" />
+    <Image Include="assets\heart.png" />
     <Image Include="assets\metal.png" />
     <Image Include="assets\squaredream.png" />
+    <Image Include="assets\squaredreamNEW.png" />
     <Image Include="assets\uscaLogo.jpg" />
     <Image Include="assets\uscaLogo.png" />
+    <Image Include="assets\wood2.jpg" />
+  </ItemGroup>
+  <ItemGroup>
+    <Media Include="assets\squares.wav" />
+    <Media Include="assets\squaresF.wav" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

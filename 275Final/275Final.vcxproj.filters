@@ -66,6 +66,9 @@
     <ClInclude Include="src\Output.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="src\Physics\RBGenerator.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Graphics.cpp">
@@ -110,6 +113,9 @@
     <ClCompile Include="src\Final.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\Physics\RBGenerator.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Image Include="assets\basketball.jpg">
@@ -136,5 +142,22 @@
     <Image Include="assets\squaredream.png">
       <Filter>Resource Files</Filter>
     </Image>
+    <Image Include="assets\heart.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="assets\squaredreamNEW.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="assets\wood2.jpg">
+      <Filter>Resource Files</Filter>
+    </Image>
+  </ItemGroup>
+  <ItemGroup>
+    <Media Include="assets\squares.wav">
+      <Filter>Resource Files</Filter>
+    </Media>
+    <Media Include="assets\squaresF.wav">
+      <Filter>Resource Files</Filter>
+    </Media>
   </ItemGroup>
 </Project>

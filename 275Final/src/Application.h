@@ -11,11 +11,13 @@ The source code is from Gustavo Pezzi, co-founder of Pikuma.com
 #include "./Physics/Body.h"
 #include "./Physics/Contact.h"
 #include "./Physics/CollisionDetection.h"
+#include "./Physics/RBGenerator.h"
 #include <vector>
 #include <algorithm>
 #include <fstream>
 #include <sstream>
 #include <string>
+
 
 class Application {
     private:
@@ -23,6 +25,7 @@ class Application {
         std::vector<Particle*> particles;
         std::vector<Particle*> collidingP;
         std::vector<ParticleGenerator*> generators;
+        std::vector<RBGenerator*> rbGenerators;
         std::vector<Body*> bodies;
 
  

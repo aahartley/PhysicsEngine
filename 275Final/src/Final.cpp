@@ -5,8 +5,12 @@
 #include <iostream>
 
 SDL_Surface* image = NULL;
-SDL_Texture* texture = NULL;
-
+SDL_Texture* textures[5];
+std::vector<Vec2> explosions;
+std::vector<Particle*> eParticles;
+int backgroundColor=0xFF22254A;
+int diskColor=0xFF8DA3CE;
+int squareColor=0xFF4B53A8;
 bool Application::isRunning() {
 	return running;
 }
@@ -19,21 +23,37 @@ void Application::setup() {
 
 	//----------- set up the position of the coordinate system origin in the window -----------------
 	Graphics::setOrigin(Graphics::windowWidth / 2, Graphics::windowHeight * .8);
+	image = IMG_Load("./assets/wood2.jpg");
+	if (image) {
+		textures[0] = SDL_CreateTextureFromSurface(Graphics::renderer, image);
+		//std::cout << "crate texture created" << std::endl;
+		SDL_FreeSurface(image);
+	}
 
-	image = IMG_Load("./assets/squareDream.png");
+	image = IMG_Load("./assets/squaredreamNEW.png");
 	SDL_Surface* formattedImage = SDL_ConvertSurfaceFormat(image, SDL_PIXELFORMAT_ARGB8888, 0);
 	if (image) {
-		texture = SDL_CreateTextureFromSurface(Graphics::renderer, image);
-		std::cout << "basket ball texture created" << std::endl;
+		textures[1] = SDL_CreateTextureFromSurface(Graphics::renderer, image);
+		//std::cout << "basket ball texture created" << std::endl;
 		SDL_FreeSurface(image);
 	}
 	//std::cout << "bytes "<<(int)formattedImage->format->BytesPerPixel<<'\n';
 	int w = formattedImage->w;
 	int h = formattedImage->h;
-	ParticleGenerator* gen = new ParticleGenerator(Vec2{ -100,100 });
-	ParticleGenerator* gen2 = new ParticleGenerator(Vec2{ 100,100 });
+	ParticleGenerator* gen = new ParticleGenerator(Vec2{ -100,100 },1000);
+	ParticleGenerator* gen2 = new ParticleGenerator(Vec2{ 100,100 },1000);
+	ParticleGenerator* gen3 = new ParticleGenerator(Vec2{ 0,100 },1000);
+	ParticleGenerator* gen4 = new ParticleGenerator(Vec2{ 0,100 },1000);
+	ParticleGenerator* gen5 = new ParticleGenerator(Vec2{ 0,0 },1);
+
+	RBGenerator* rbGen = new RBGenerator();
 	generators.push_back(gen);
 	generators.push_back(gen2);
+	generators.push_back(gen3);
+	generators.push_back(gen4);
+	generators.push_back(gen5);
+
+	rbGenerators.push_back(rbGen);
 
 	//std::cout << w << " " << h<<'\n';
 	Uint32* pixels = (Uint32*)formattedImage->pixels;
@@ -46,21 +66,82 @@ void Application::setup() {
 			if (a > 0) {
 				//std::cout << index << '\n';
 				//Graphics::xPosInCoordinate(x + 200)
-				Particle* p = new Particle(Graphics::xPosInCoordinate(x + 750), Graphics::yPosInCoordinate(y + 200), 1, 0.3);
+				Particle* p = new Particle(Graphics::xPosInCoordinate(x + 350), Graphics::yPosInCoordinate(y + 200), 1, 0.3);
 				p->color = (a << 24) + (b << 16) + (g << 8) + r;
 				//particles.push_back(p);
 				int color = (a << 24) + (b << 16) + (g << 8) + r;
-				if (index < 65000) {
-					gen->pos.push_back(Vec2{ Graphics::xPosInCoordinate(x + 750),Graphics::yPosInCoordinate(y + 200) });
+				if (index < 900000) {
+					gen->pos.push_back(Vec2{ Graphics::xPosInCoordinate(x +50),Graphics::yPosInCoordinate(y ) });
 					gen->colors.push_back(color);
 				}
 				else {
-					gen2->pos.push_back(Vec2{ Graphics::xPosInCoordinate(x + 750),Graphics::yPosInCoordinate(y + 200) });
+					gen2->pos.push_back(Vec2{ Graphics::xPosInCoordinate(x+50 ),Graphics::yPosInCoordinate(y) });
 					gen2->colors.push_back(color);
 				}
 			}
 		}
 	}
+
+	image = IMG_Load("./assets/heart.png");
+	formattedImage = SDL_ConvertSurfaceFormat(image, SDL_PIXELFORMAT_ARGB8888, 0);
+	if (image) {
+		textures[2] = SDL_CreateTextureFromSurface(Graphics::renderer, image);
+		//std::cout << "basket ball texture created" << std::endl;
+		SDL_FreeSurface(image);
+	}
+	w = formattedImage->w;
+	h = formattedImage->h;
+	Uint32* pixels2 = (Uint32*)formattedImage->pixels;
+
+	for (float y = 0; y < h; y += 5) {
+		for (float x = 0; x < w; x += 5) {
+			int index = (y * w + x);
+			Uint8 r, g, b, a;
+			SDL_GetRGBA(pixels2[index], formattedImage->format, &r, &g, &b, &a);
+			if (a > 0) {
+				//std::cout << index << '\n';
+				//Graphics::xPosInCoordinate(x + 200)
+				Particle* p = new Particle(Graphics::xPosInCoordinate(x + 750), Graphics::yPosInCoordinate(y + 200), 1, 0.3);
+				p->color = (a << 24) + (b << 16) + (g << 8) + r;
+				//particles.push_back(p);
+				int color = (a << 24) + (b << 16) + (g << 8) + r;
+				gen3->pos.push_back(Vec2{ Graphics::xPosInCoordinate(x + 850),Graphics::yPosInCoordinate(y + 400) });
+				gen3->colors.push_back(color);
+				
+			}
+		}
+	}
+	gen4->keepStatic = true;
+	image = IMG_Load("./assets/text.png");
+	formattedImage = SDL_ConvertSurfaceFormat(image, SDL_PIXELFORMAT_ARGB8888, 0);
+	if (image) {
+		textures[3] = SDL_CreateTextureFromSurface(Graphics::renderer, image);
+		//std::cout << "basket ball texture created" << std::endl;
+		SDL_FreeSurface(image);
+	}
+	w = formattedImage->w;
+	h = formattedImage->h;
+	Uint32* pixels3 = (Uint32*)formattedImage->pixels;
+
+	for (float y = 0; y < h; y += 5) {
+		for (float x = 0; x < w; x += 5) {
+			int index = (y * w + x);
+			Uint8 r, g, b, a;
+			SDL_GetRGBA(pixels3[index], formattedImage->format, &r, &g, &b, &a);
+			if (a > 0) {
+				//std::cout << index << '\n';
+				//Graphics::xPosInCoordinate(x + 200)
+				Particle* p = new Particle(Graphics::xPosInCoordinate(x ), Graphics::yPosInCoordinate(y ), 1, 0.3);
+				p->color = (a << 24) + (b << 16) + (g << 8) + r;
+				//particles.push_back(p);
+				int color = (a << 24) + (b << 16) + (g << 8) + r;
+				gen4->pos.push_back(Vec2{ Graphics::xPosInCoordinate(x +400),Graphics::yPosInCoordinate(y+350 ) });
+				gen4->colors.push_back(color);
+
+			}
+		}
+	}
+	
 	//std::cout << "pic made";
 	//SDL_SetRenderTarget(Graphics::renderer, texture);
 	//SDL_RenderReadPixels(Graphics::renderer, NULL, SDL_PIXELFORMAT_RGBA32, pixels, 2);
@@ -83,25 +164,30 @@ void Application::setup() {
 	//	Particle* readP = new Particle(x, y, 1, 1);
 	//	particles.push_back(readP);
 	//}
-	Body* floor = new Body(Box(Graphics::getWindowWidth() * 1.0 / Graphics::unitLength, 1),
-		0, 0, -1);
-	floor->restitution = 0.2;
-	floor->friction = 0.7;
-	floor->color = 0xFF003366;
+	Body* floor = new Body(Box(1000, 6),
+		0, -3, -1);
+	floor->restitution = 0.9;
+	floor->friction = 0.0;
+	floor->color = 0;
 	bodies.push_back(floor);
-
-	Body* rectangle = new Body(Box(2, 2), 0, 10, 1.0);
-	rectangle->restitution = 0.4;
-	rectangle->friction = 0.5;
+	
+	Body* rectangle = new Body(Box(15, 15), 0, 20, 500.0);
+	rectangle->restitution = 0.9;
+	rectangle->friction = 0.1;
+	rectangle->color = squareColor;
 	bodies.push_back(rectangle);
+	
+	Body* leftD = new Body(Disk(8), -190, 20, 30);
+	leftD->restitution = 1.0;
+	leftD->friction = 0.1;
+	leftD->color = diskColor;
+	bodies.push_back(leftD);
 
-	Body* cueDisk = new Body(Disk(2), -10, 20, 10);
-	cueDisk->color = 0xFFFFFFFF;
-	bodies.push_back(cueDisk);
-
-	Body* targetDisk = new Body(Disk(2), 10, 20, 10);
-	targetDisk->color = 0xFF00FF00;
-	bodies.push_back(targetDisk);
+	Body* rightD = new Body(Disk(8), 190, 20, 30);
+	rightD->restitution = 1.0;
+	rightD->friction = 0.1;
+	rightD->color = diskColor;
+	bodies.push_back(rightD);
 
 
 
@@ -177,19 +263,55 @@ void Application::update(double deltaTime, double t) {
 
 		//particle->addForce(pushForce);	// apply push force
 	}
-	for (auto gen : generators) {
-		gen->generateParticles(particles, t, Timestep);
+	for (int i = 0; i < generators.size();i++) {
+		if(i<2)
+			generators[i]->generateParticles(particles, t, Timestep, 0,10);
+		else if(i==2)
+			generators[i]->generateParticles(particles, t, Timestep, 68, 75);
+		else if (i==3)
+			generators[i]->generateParticles(particles, t, Timestep, 76, 80);
+		else if(i==4)
+			generators[i]->generateFireworks(particles, t, Timestep, 76, 83);
+
+
+
 	}
-	if (t > 28) {
+	for (auto gen : rbGenerators) {
+		gen->generateDisks(bodies, t, Timestep);
+
+	}
+	if (t > 25) {
 		for (auto body : bodies) {
 			//body->addTorque(0.1);
 			body->addForce(Vec2(0, -10 * body->mass));
-			body->update(deltaTime);
+			if (body->shape->getType() == DISK && t<31) {
+				body->addTorque(100);
+				body->update(deltaTime, 1,200);
+			}
+			else if (body->shape->getType() == DISK && t >= 31 && t<35) {
+				body->rotation = 0;
+			
+			}
+			else if (body->shape->getType() == DISK && t >=35 && t<42) {
+				body->update(deltaTime, 1,1000);
+			}
+			else if (t >= 42 && t < 43 &&body->shape->getType() == BOX && !body->isStatic()) {
+				body->position = Vec2(2,-3);
+			}
+			else if (t >= 45 && t < 57 && body->shape->getType() == BOX && !body->isStatic()) {
+				body->addForce(Vec2(0, -5000));
+				body->addTorque(5000);
+				body->update(deltaTime, 0, 0);
+
+			}
+			else {
+				body->update(deltaTime, 0,0);
+			}
 
 
 		}
 	}
-	if (t > 28) {
+	if (t > 25) {
 		// Check all the rigidbodies with all other rigidbodies for collisions
 		for (int i = 0; i < bodies.size() - 1; i++) {
 			for (int j = i + 1; j < bodies.size(); j++) {
@@ -205,11 +327,12 @@ void Application::update(double deltaTime, double t) {
 			}
 		}
 	}
-
+	
 
 	//------------- Integrate the acceleration and velocity to estimate the new position ---------------
-	for (auto particle : particles) {
+	for (int i = 0; i < particles.size();++i) {
 		//implement: if particle needs to rest
+		auto particle = particles[i];
 		if (particle->alive) {
 			if (t <= 3) {
 				particle->integrate(Timestep, Vec2(0, 15), 2);
@@ -229,7 +352,7 @@ void Application::update(double deltaTime, double t) {
 				}
 			}
 			//form pic
-			else if (t > 3 && t <= 15) {
+			else if (t > 3 && t <= 14) {
 				particle->integrate(Timestep, Vec2(0, -10), 1);
 				Vec2 wind = Force::generateWindForce(*particle, .7, 1);
 				Vec2 drag = Force::generateDragForce(*particle, 0.4);
@@ -243,7 +366,7 @@ void Application::update(double deltaTime, double t) {
 
 			}
 			//outro
-			else if (t > 15 && t <= 25) {
+			else if (t > 14 && t <= 24) {
 				particle->integrate(Timestep, Vec2(0, -10), 3);
 				Vec2 wind = Force::generateWindForce(*particle, .7, 1);
 				Vec2 drag = Force::generateDragForce(*particle, 0.4);
@@ -256,26 +379,53 @@ void Application::update(double deltaTime, double t) {
 				}
 
 			}
-			else if (t > 25 && t <= 33) {
-				particle->integrate(Timestep, Vec2(0, -10), 4);
-				Vec2 wind = Force::generateWindForce(*particle, .7, 1);
+			else if (t > 76 && t <= 90) {
+				particle->integrate(Timestep, Vec2(0, -10), 0);
+				//Vec2 wind = Force::generateWindForce(*particle, .7, 1);
 				Vec2 drag = Force::generateDragForce(*particle, 0.4);
 
 				if (particle->velocity.magnitude() >= 0.0) {
 					particle->addForce(drag);
-					int a = rand() % 2;
-					if (a == 1)
-						particle->addForce(wind);
+			
+				}
+				if (particle->velocity.y <= 0 && !particle->exploded) {
+					particle->color = 0x00FFFFFF;
+					particle->exploded = true;
+					explosions.push_back(particle->position);
 				}
 
 			}
-
-			checkBoundary(particle, Timestep);
+			if(t<76)
+				checkBoundary(particle, Timestep);
 		}
 
 	}
-	//collision for particle system
+	for (auto particle : eParticles) {
+		particle->integrate(Timestep, Vec2(0, -30), 0);
+		//Vec2 wind = Force::generateWindForce(*particle, .7, 1);
+		Vec2 drag = Force::generateDragForce(*particle, 0.4);
 
+		if (particle->velocity.magnitude() >= 0.0) {
+			particle->addForce(drag);
+
+		}
+		if (particle->velocity.y <= -50)
+		{
+			int alpha = particle->color << 24;
+			particle->color = 0x00000000;
+		}
+	}
+	//collision for particle system
+	for (auto v : explosions) {
+		for (int i = 0; i < 30; i++) {
+			Vec2 randomD = randomDirection();
+			Particle* p = new Particle(v.x , v.y, 1, 0.3);
+			p->velocity = randomD * randomFloat(1,6);
+			p->color = 0xFF4B53A8;
+			eParticles.push_back(p);
+		}
+	}
+	explosions.clear();
 
 
 
@@ -397,9 +547,8 @@ void Application::checkBoundary(Particle* p, float dt) {
 // render - render the objects for a frame                                            //
 //====================================================================================//
 void Application::render(float dt) {
-	Graphics::clearScreen(0xFF21070F);
-	if (dt <= 25) {
-
+	Graphics::clearScreen(0xFF000000);
+	if (dt <= 24) {
 		//Graphics::coordinateGrid(Graphics::unitLength, 0xFF222222);	// draw the coordinate grid for reference
 		for (auto particle : particles) {
 			Graphics::drawDisk(particle->position.x, particle->position.y, particle->radius, particle->color);
@@ -409,15 +558,16 @@ void Application::render(float dt) {
 		//SDL_Rect dstrect = { Graphics::xPosInWindow(-30), Graphics::yPosInWindow(70), 320, 240 };
 		//SDL_RenderCopy(Graphics::renderer, texture, NULL, &dstrect);
 	}
-	else if (dt > 25 && dt <= 28) {
+	else if (dt > 24 && dt <= 25) {
 
 		for (auto particle : particles) {
 			delete particle;
 		}
 		particles.clear();
 	}
-	else if (dt > 28) {
-		Graphics::coordinateGrid(Graphics::unitLength, 0xFF222222);	// draw the coordinate grid for reference
+	else if (dt > 25 and dt<44) {
+		Graphics::clearScreen(backgroundColor);
+		//Graphics::coordinateGrid(Graphics::unitLength, 0xFF222222);	// draw the coordinate grid for reference
 		for (auto particle : particles) {
 			Graphics::drawDisk(particle->position.x, particle->position.y, particle->radius, particle->color);
 		}
@@ -425,11 +575,18 @@ void Application::render(float dt) {
 			if (body->shape->getType() == DISK) {
 				Disk* disk = (Disk*)body->shape;
 				Graphics::drawDisk(body->position.x, body->position.y,
-					disk->radius, body->rotation, 0xFF00FFFF);
+					disk->radius, body->rotation, body->color);
 			}
 			if (body->shape->getType() == BOX) {
 				Box* box = (Box*)body->shape;
-				Graphics::drawFilledPolygon(box->worldVertices, 0xFF00FFFF);
+				if (body->color == 0) {
+					SDL_Rect dstrect = { Graphics::xPosInWindow(body->position.x - box->width * 0.5),
+					Graphics::yPosInWindow(body->position.y + box->height * 0.5),
+					Graphics::unitLength * box->width, Graphics::unitLength * box->height };
+					SDL_RenderCopyEx(Graphics::renderer, textures[0], NULL, &dstrect, body->rotation * -57.295779513, NULL, SDL_FLIP_NONE);
+				}
+				else
+					Graphics::drawFilledPolygon(box->worldVertices, body->color);
 			}
 			/*	if (!body->isStatic() && body->shape->getType() == BOX) {
 					Box* box = (Box*)body->shape;
@@ -445,6 +602,131 @@ void Application::render(float dt) {
 		//SDL_RenderCopy(Graphics::renderer, texture, NULL, &dstrect);
 
 	}
+	else if (dt >=44 && dt < 45) {
+		Graphics::clearScreen(backgroundColor);
+
+		for (auto body : bodies) {
+			delete body;
+		}
+		bodies.clear();
+
+		Body* rectangle = new Body(Box(15, 15), 0, 170, 500.0);
+		rectangle->restitution = 0.9;
+		rectangle->friction = 0.1;
+		rectangle->color = squareColor;
+		bodies.push_back(rectangle);
+
+		Body* beam = new Body(Box(150, 10), -50, 150, -1);
+		beam->restitution = 0.2;
+		beam->friction = 0.1;
+		beam->color = 0;
+		beam->rotation = -3.14159 / 4;
+
+		bodies.push_back(beam);
+
+		Body* beam2 = new Body(Box(120, 10), 50, 50, -1);
+		beam2->restitution = 0.5;
+		beam2->friction = 0.1;
+		beam2->color = 0;
+		beam2->rotation = 3.14159 / 4;
+
+		bodies.push_back(beam2);
+
+		Body* beam3 = new Body(Box(150, 10), -80, 20, -1);
+		beam3->restitution = 0.2;
+		beam3->friction = 0.1;
+		beam3->color = 0;
+		beam3->rotation = -3.14159 / 4;
+
+		bodies.push_back(beam3);
+	}
+	else if (dt >= 45 && dt<56) {
+		Graphics::clearScreen(backgroundColor);
+		for (auto body : bodies) {
+
+			if (body->shape->getType() == BOX) {
+				Box* box = (Box*)body->shape;
+				if (body->color == 0) {
+					SDL_Rect dstrect = { Graphics::xPosInWindow(body->position.x - box->width * 0.5),
+					Graphics::yPosInWindow(body->position.y + box->height * 0.5),
+					Graphics::unitLength * box->width, Graphics::unitLength * box->height };
+					SDL_RenderCopyEx(Graphics::renderer, textures[0], NULL, &dstrect, body->rotation * -57.295779513, NULL, SDL_FLIP_NONE);
+				}
+				else
+					Graphics::drawFilledPolygon(box->worldVertices, body->color);
+			}
+		}
+	}
+	else if (dt >= 56 && dt < 57) {
+	Graphics::clearScreen(backgroundColor);
+		for (auto body : bodies) {
+			delete body;
+		}
+		bodies.clear();
+
+		Body* rectangle = new Body(Box(15, 15), 25, 170, 500.0);
+		rectangle->restitution = 0.9;
+		rectangle->friction = 0.1;
+		rectangle->rotation = -3.14159 / 4;
+		rectangle->color = squareColor;
+		bodies.push_back(rectangle);
+
+		Body* rectangle2 = new Body(Box(15, 15), 0, 10, 500.0);
+		rectangle2->restitution = 0.9;
+		rectangle2->friction = 0.1;
+		rectangle2->color = squareColor;
+		bodies.push_back(rectangle2);
+
+		Body* floor = new Body(Box(1000, 6),
+			0, -3, -1);
+		floor->restitution = 0.1;
+		floor->friction = 0.5;
+		floor->color = 0;
+		bodies.push_back(floor);
+	}
+	else if (dt >= 57 && dt < 75) {
+	Graphics::clearScreen(backgroundColor);
+	for (auto particle : particles) {
+		Graphics::drawDisk(particle->position.x, particle->position.y, particle->radius, particle->color);
+	}
+		for (auto body : bodies) {
+
+			if (body->shape->getType() == BOX) {
+				Box* box = (Box*)body->shape;
+				if (body->color == 0) {
+					SDL_Rect dstrect = { Graphics::xPosInWindow(body->position.x - box->width * 0.5),
+					Graphics::yPosInWindow(body->position.y + box->height * 0.5),
+					Graphics::unitLength * box->width, Graphics::unitLength * box->height };
+					SDL_RenderCopyEx(Graphics::renderer, textures[0], NULL, &dstrect, body->rotation * -57.295779513, NULL, SDL_FLIP_NONE);
+				}
+				else
+					Graphics::drawFilledPolygon(box->worldVertices, body->color);
+			}
+		}
+	}
+	else if (dt >= 75 && dt < 76) {
+	
+		for (auto particle : particles) {
+			delete particle;
+		}
+		particles.clear();
+	}
+	else if (dt >= 76) {
+	for (auto particle : eParticles) {
+		Graphics::drawDisk(particle->position.x, particle->position.y, particle->radius, particle->color);
+	}
+		for (auto particle : particles) {
+		
+			if (particle->exploded) {
+				//delete particle;
+				//particles.erase(std::remove(particles.begin(), particles.end(), particle), particles.end());
+			}
+			else 
+				Graphics::drawDisk(particle->position.x, particle->position.y, particle->radius, particle->color);
+		}
+	
+	}
+	Graphics::drawCircle(0, 50, 200, 0xFFFFFFFF);
 
 	Graphics::renderFrame();
 
@@ -461,8 +743,13 @@ void Application::destroy() {
 	for (auto particle : particles) {
 		delete particle;
 	}
+	for (auto particle : eParticles) {
+		delete particle;
+	}
 	for (auto body : bodies) {
 		delete body;
 	}
+	for (auto t : textures)
+		SDL_DestroyTexture(t);
 	Graphics::CloseWindow();
 }

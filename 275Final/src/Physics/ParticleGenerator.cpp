@@ -1,10 +1,10 @@
 #include "ParticleGenerator.h"
-#include "../Output.h"
+#include "Constants.h"
 
-ParticleGenerator::ParticleGenerator(Vec2 location) {
+ParticleGenerator::ParticleGenerator(Vec2 location, int rate) {
 	this->location = location;
 	n = 0;
-	rate = 10000;
+	this->rate = rate;
 	f = 0;
 
 }
@@ -22,9 +22,49 @@ Vec2 ParticleGenerator::randomVel() {
 	return { x,y };
 }
 
-void ParticleGenerator::generateParticles(std::vector<Particle*>& particles, float t, float h) {
+void ParticleGenerator::generateParticles(std::vector<Particle*>& particles, float t, float h, int start, int end) {
 	max = pos.size();
-	if (outputTime(t)) {
+	if (t>=start && t<end) {
+		n = rate * h;
+		f = f + (rate * h - n);
+		if (f > 1) {
+			n = n + 1;
+			f = f - 1;
+		}
+		if (start == 0) {
+			for (int i = 0; i < n; i++) {
+				if (numOfP <= max - 1) {
+					Particle* p = new Particle(location.x, location.y, 1, 0.3);
+					particles.push_back(p);
+					p->endPos = pos.at(numOfP);
+					p->color = colors.at(numOfP);
+					if (keepStatic)p->alive = false;
+					//p->velocity = randomVel();
+					numOfP++;
+				}
+
+			}
+		}
+		else {
+			for (int i = 0; i < n; i++) {
+				if (numOfP <= max - 1) {
+					Particle* p = new Particle(pos.at(numOfP).x, pos.at(numOfP).y, 1, 0.3);
+					particles.push_back(p);
+					p->endPos = pos.at(numOfP);
+					p->color = colors.at(numOfP);
+					if (keepStatic)p->alive = false;
+
+					p->velocity = randomVel();
+					numOfP++;
+				}
+
+			}
+		}
+	}
+
+}
+void ParticleGenerator::generateFireworks(std::vector<Particle*>& particles, float t, float h, int start, int end) {
+	if (t >= start && t < end) {
 		n = rate * h;
 		f = f + (rate * h - n);
 		if (f > 1) {
@@ -32,15 +72,13 @@ void ParticleGenerator::generateParticles(std::vector<Particle*>& particles, flo
 			f = f - 1;
 		}
 		for (int i = 0; i < n; i++) {
-			if (numOfP <= max - 1) {
-				Particle* p = new Particle(location.x, location.y, 1, 0.3);
-				particles.push_back(p);
-				p->endPos = pos.at(numOfP);
-				p->color = colors.at(numOfP);
-				p->velocity = randomVel();
-				numOfP++;
-			}
-
+			Particle* p = new Particle(location.x+randomFloat(-100,100), location.y - 30, 1, 0.3);
+			p->velocity = Vec2(0, randomFloat(50,100));
+			p->color = 0xFF4B53A8;
+			p->particleType = FIREWORK;
+			particles.push_back(p);
 		}
+
 	}
+
 }
